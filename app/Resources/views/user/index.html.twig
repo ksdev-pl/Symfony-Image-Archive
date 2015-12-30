@@ -1,0 +1,39 @@
+{% extends '__base.html.twig' %}
+
+{% block styles %}
+    <style>
+        #table-th-0 {
+            width: 50%;
+        }
+    </style>
+{% endblock %}
+
+{% block scripts %}
+    {% include('_components/_table_grid.html.twig') %}
+    <script>
+        var AppModels = {
+            users: {{ users|json_encode|raw }}
+        };
+
+        new Vue({
+            el: 'body',
+            data: {
+                searchQuery: '',
+                gridColumns: ['name', 'email'],
+                gridData: AppModels.users
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <template id="table-grid-cell-template">
+        <template v-if="key == 'name'">
+            <a href="{{ path('app_user_index') }}/${ data.id }/edit">${ data[key] }</a>
+        </template>
+        <template v-else>
+            ${ data[key] }
+        </template>
+    </template>
+    {% include('_common_table.html.twig') %}
+{% endblock %}

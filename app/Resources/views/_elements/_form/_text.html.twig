@@ -1,0 +1,29 @@
+<div :class="{'form-group': true, 'has-error': hasError('{{ model }}')}">
+    <label for="{{ model }}"
+           {% if not horizontal is defined or not horizontal %}
+               class="col-sm-2 control-label"
+           {% endif %}>
+        {{ label }}{% if required is defined and required %}&nbsp;<sup class="label-required">*</sup>{% endif %}
+    </label>
+    {% if not horizontal is defined or not horizontal %}
+        <div class="col-sm-10">
+    {% endif %}
+    <input type="{% if type is defined %}{{ type }}{% else %}text{% endif %}"
+           class="form-control"
+           id="{{ model }}"
+           v-model="formData.{{ model }}"
+           {% if attributes is defined %}
+               {% for key, value in attributes %}
+                   {{ key }}="{{ value }}"
+               {% endfor %}
+           {% endif %}
+           {% if required is defined and required %}
+               required
+           {% endif %}>
+           <span class="help-block" v-show="hasError('{{ model }}')">
+               {{ error|default('Validation error.') }}
+           </span>
+    {% if not horizontal is defined or not horizontal %}
+        </div>
+    {% endif %}
+</div>

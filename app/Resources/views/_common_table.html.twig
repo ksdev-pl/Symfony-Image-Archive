@@ -1,0 +1,15 @@
+<h2 class="page-header">
+    Users
+    <a href="{{ path('app_user_create') }}" class="btn btn-sm btn-primary add-item-btn">Add New</a>
+</h2>
+<form class="search-table-form">
+    <div class="form-group has-feedback">
+        <input class="form-control" name="query"
+               v-model="searchQuery" debounce="200" autofocus>
+        <span class="glyphicon glyphicon-search form-control-feedback"></span>
+    </div>
+</form>
+<table-grid :data="gridData"
+            :columns="gridColumns"
+            :filter-key="searchQuery">
+</table-grid>

@@ -1,0 +1,116 @@
+<template id="table-grid-template">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th v-for="key in columns"
+                    v-on:click="sortBy(key)"
+                    v-bind:class="{ selected: sortKey == key }"
+                    id="table-th-${ $index }">
+                    ${ key | capitalize }
+                        <span class="arrow"
+                              v-bind:class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                        </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="entry in filteredData
+                    | orderBy sortKey sortOrders[sortKey]
+                    | limitBy paginationLimit paginationOffset">
+                <td v-for="key in columns">
+                    <table-grid-cell :key="key" :data="entry"></table-grid-cell>
+                </td>
+            </tr>
+            <tr v-if="filteredData.length == 0">
+                <td :colspan="columns.length">No matching records found</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-left pagination-info">
+        Showing ${ (paginationOffset + 1) < filteredData.length ? (paginationOffset + 1) : filteredData.length }
+        to ${ (paginationOffset + paginationLimit) < filteredData.length ? paginationOffset + paginationLimit : filteredData.length }
+        of ${ filteredData.length } entries
+    </div>
+    <nav class="pull-right">
+        <ul class="pagination">
+            <li :class="{'disabled': currentPageNum == 0}">
+                <a href="#" aria-label="Previous"
+                   @click.prevent="changePageNum(currentPageNum == 0 ? 0 : currentPageNum - 1)">
+                    <span aria-hidden="true">Previous</span>
+                </a>
+            </li>
+            <li v-for="num in numOfPages" :class="{'active': currentPageNum == num}">
+                <a href="#" @click.prevent="changePageNum(num)">${ num + 1 }</a>
+            </li>
+            <li :class="{'disabled': numOfPages == 0 || currentPageNum == numOfPages - 1}">
+                <a href="#" aria-label="Next"
+                   @click.prevent="changePageNum(currentPageNum == numOfPages - 1 ? numOfPages - 1 : currentPageNum + 1)">
+                    <span aria-hidden="true">Next</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</template>
+
+<template id="table-grid-cell-template">
+    ${ data }
+</template>
+
+<script>
+    Vue.component('table-grid', {
+        template: '#table-grid-template',
+        props: {
+            data: Array,
+            columns: Array,
+            filterKey: String
+        },
+        data: function () {
+            var sortOrders = {}
+            this.columns.forEach(function (key) {
+                sortOrders[key] = -1
+            })
+            return {
+                sortKey: '',
+                sortOrders: sortOrders,
+                paginationLimit: 15,
+                currentPageNum: 0
+            }
+        },
+        computed: {
+            filteredData: function () {
+                var filterBy = Vue.filter('filterBy');
+                return filterBy(this.data, this.filterKey);
+            },
+            numOfPages: function () {
+                return Math.ceil(this.filteredData.length / this.paginationLimit);
+            },
+            paginationOffset: function () {
+                return this.currentPageNum * this.paginationLimit;
+            }
+        },
+        methods: {
+            sortBy: function (key) {
+                this.sortKey = key
+                this.sortOrders[key] = this.sortOrders[key] * -1
+            },
+            changePageNum: function (num) {
+                this.currentPageNum = num;
+            }
+        },
+        watch: {
+            'filterKey': function () {
+                this.currentPageNum = 0;
+            }
+        }
+    })
+
+    Vue.component('table-grid-cell', {
+        template: '#table-grid-cell-template',
+        props: {
+            key: String,
+            data: Object
+        }
+    })
+</script>

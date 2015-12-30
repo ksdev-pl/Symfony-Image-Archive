@@ -1,0 +1,38 @@
+{% include '_elements/_form/_text.html.twig' with {
+    'model': 'name',
+    'label': 'Name',
+    'required': true,
+    'error': 'Name is required.'
+} only %}
+
+{% include '_elements/_form/_text.html.twig' with {
+    'type': 'email',
+    'model': 'email',
+    'label': 'Email',
+    'required': true,
+    'error': 'Email is required.'
+} only %}
+
+{% if isCreateAction is defined %}
+
+    {% include '_elements/_form/_text.html.twig' with {
+        'type': 'password',
+        'model': 'password',
+        'label': 'Password',
+        'required': true,
+        'error': 'Password is required. Minimum length: 6 characters.'
+    } only %}
+
+    {% include '_elements/_form/_text.html.twig' with {
+        'type': 'password',
+        'model': 'repeat_password',
+        'label': 'Repeat password',
+        'required': true,
+        'error': 'Repeated password must be the same as password.'
+    } only %}
+
+{% endif %}
+
+{% include '_elements/_form/_common_footer.html.twig' with {
+    'cancelPath': path('app_user_index')
+} only %}

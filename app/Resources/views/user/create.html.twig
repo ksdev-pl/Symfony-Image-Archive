@@ -1,0 +1,49 @@
+{% extends '__base.html.twig' %}
+
+{% block scripts %}
+    {% include '_components/_form_component.html.twig' with {'contentView': 'user/_form.html.twig'} %}
+    <script>
+        var vm = new Vue({
+            el: 'body',
+            data: {
+                formData: {
+                    name: '',
+                    email: '',
+                    password: '',
+                    repeat_password: ''
+                }
+            },
+            computed: {
+                formValidation: function () {
+                    return {
+                        name: this.formData.name.length > 0,
+                        email: this.formData.email.length > 0
+                            && regex.email.test(this.formData.email),
+                        password: this.formData.password.length >= 6,
+                        repeat_password: this.formData.repeat_password.length > 0
+                            && this.formData.password == this.formData.repeat_password
+                    }
+                },
+                formSubmit: function () {
+                    return {
+                        name: this.formData.name,
+                        email: this.formData.email,
+                        password: this.formData.password,
+                        repeat_password: this.formData.repeat_password
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h2 class="page-header">Add New User</h2>
+    <form-component action="{{ path('app_user_store') }}"
+                    method="post"
+                    redirect="{{ path('app_user_index') }}"
+                    :form-data="formData"
+                    :form-validation="formValidation"
+                    :form-submit="formSubmit">
+    </form-component>
+{% endblock %}

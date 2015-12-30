@@ -1,0 +1,54 @@
+<template id="form-component-template">
+    <form action="${ action }"
+          method="${ method }"
+          class="form-horizontal"
+          @submit.prevent="submitForm"
+          novalidate>
+        {% include(contentView) %}
+    </form>
+</template>
+
+<script>
+    Vue.component('form-component', {
+        template: '#form-component-template',
+        props: {
+            action: String,
+            method: String,
+            redirect: String,
+            formData: Object,
+            formValidation: Object,
+            formSubmit: Object
+        },
+        data: function () {
+            return {
+                afterSubmit: false
+            };
+        },
+        computed: {
+            isValid: function () {
+                var validation = this.formValidation;
+                return Object.keys(validation).every(function (key) {
+                    return validation[key];
+                })
+            }
+        },
+        methods: {
+            submitForm: function () {
+                this.afterSubmit = true;
+                if (this.isValid) {
+                    vueMethods.submitForm(this.formSubmit, this.redirect)
+                }
+            },
+            hasError: function (model) {
+                if (!this.afterSubmit) {
+                    return false;
+                } else {
+                    var validation = this.formValidation
+                    return validation != undefined
+                            && validation[model] != undefined
+                            && !validation[model];
+                }
+            }
+        }
+    })
+</script>
